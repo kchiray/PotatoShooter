@@ -31,9 +31,12 @@ public class SoundController : MonoBehaviour {
         }, delayBetweenClips);
 
         canPlay = false;
-
-        print("sound play");
         source.PlayOneShot(clip);
         
+    }
+
+    public void Stop()
+    {
+        canPlay = false;
     }
 }

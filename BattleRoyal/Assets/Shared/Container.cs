@@ -41,6 +41,12 @@ public class Container : MonoBehaviour
             return value;
         }
 
+        internal void Set(int amount)
+        {
+            amountTaken -= amount;
+            if (amountTaken < 0)
+                amountTaken = 0;
+        }
     }
     public List<ContainerItem> items;
     public event System.Action OnContainerReady;
@@ -63,6 +69,14 @@ public class Container : MonoBehaviour
         });
 
         return items.Last().Id;
+    }
+
+    public void Put(string name, int amount)
+    {
+        var containerItem = items.Where(x => x.Name == name).FirstOrDefault();
+        if (containerItem == null)
+            return;
+        containerItem.Set(amount);
     }
 
     public int TakeFromContainer(System.Guid id, int amount)

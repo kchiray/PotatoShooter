@@ -10,11 +10,13 @@ public class Shooter : MonoBehaviour
     [SerializeField] public Transform hand;
     [SerializeField] SoundController audioReload;
     [SerializeField] SoundController audioFire;
+    [SerializeField] Transform aimTarget;
 
     float nextFireAllowed;
     public bool canFire;
 
     public WeaponReloader reloader;
+    private ParticleSystem muzzleParticleSystem;
     Transform muzzle;
 
     
@@ -27,6 +29,7 @@ public class Shooter : MonoBehaviour
             print("muzzle not found");
         }
         reloader = GetComponent<WeaponReloader>();
+        muzzleParticleSystem = muzzle.GetComponent<ParticleSystem>();
        
     }
 
@@ -34,8 +37,11 @@ public class Shooter : MonoBehaviour
     {
         if (reloader == null)
             return;
+        if (reloader.RoundsRemainingInClip == 0 && reloader.RoundsRemainingInInventory == 0 || reloader.RoundsRemainingInClip == reloader.clipSize)
+            return;
         reloader.Reload();
         audioReload.Play();
+
     }
     public virtual void Fire()
     {
@@ -48,14 +54,19 @@ public class Shooter : MonoBehaviour
         {
             if (reloader.IsReloading)
                 return;
-            if (reloader.RoundsRemainingInClip == 1)
+            if (reloader.RoundsRemainingInClip == 0)
+            {
                 Reload();
+                return;
+            }
 
             reloader.TakeFromClip(1);
         }
 
         nextFireAllowed = Time.time + rateOfFire;
 
+        muzzle.LookAt(aimTarget);
+        FireEffect();
         //instantiate the projectile
         Instantiate(projectile, muzzle.position, muzzle.rotation);
         audioFire.Play();
@@ -66,6 +77,13 @@ public class Shooter : MonoBehaviour
         transform.SetParent(hand);
         transform.localPosition = Vector3.zero;
         transform.localRotation = Quaternion.identity;
+    }
+
+    void FireEffect()
+    {
+        if (muzzleParticleSystem == null)
+            return;
+        muzzleParticleSystem.Play();
     }
     
 }

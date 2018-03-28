@@ -4,6 +4,7 @@ using UnityEngine;
 
 
 [RequireComponent(typeof(MoveController))]
+[RequireComponent(typeof(PlayerState))]
 public class Player : MonoBehaviour
 {
     [System.Serializable]
@@ -21,6 +22,8 @@ public class Player : MonoBehaviour
     [SerializeField] AudioController footsteps;
     [SerializeField] float minimalMoveThreshold;
 
+    public CombatAim playerAim;
+
     Vector3 previousPosition;
 
     private MoveController m_MoveController;
@@ -35,11 +38,22 @@ public class Player : MonoBehaviour
             return m_MoveController;
         }
     }
+    private PlayerState m_PlayerState;
+    public PlayerState PlayerState
+    {
+        get
+        {
+            if (m_PlayerState == null)
+            {
+                m_PlayerState = GetComponent<PlayerState>();
+            }
+            return m_PlayerState;
+        }
+    }
 
     InputController playerInput;
     Vector2 mouseInput;
-
-    private Crosshair m_Crosshair;
+    
     private PlayerShoot m_PlayerShoot;
     public PlayerShoot PlayerShoot
     {
@@ -48,16 +62,6 @@ public class Player : MonoBehaviour
             if (m_PlayerShoot == null)
                 m_PlayerShoot = GetComponent<PlayerShoot>();
             return m_PlayerShoot;
-        }
-    }
-
-    private Crosshair Crosshair
-    {
-        get
-        {
-            if (m_Crosshair == null)
-                m_Crosshair = GetComponentInChildren<Crosshair>();
-            return m_Crosshair;
         }
     }
 
@@ -87,8 +91,8 @@ public class Player : MonoBehaviour
         mouseInput.y = Mathf.Lerp(mouseInput.y, playerInput.MouseInput.y, 1f / MouseControl.Damping.y);
 
         transform.Rotate(Vector3.up * mouseInput.x * MouseControl.Sensitivity.x);
-
-        Crosshair.LookHeight(mouseInput.y * MouseControl.Sensitivity.y);
+        
+        playerAim.SetRotation(mouseInput.y * MouseControl.Sensitivity.y);
     }
 
     void Move()

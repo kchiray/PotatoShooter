@@ -4,11 +4,12 @@ using UnityEngine;
 
 public class WeaponReloader : MonoBehaviour {
 
-    [SerializeField] internal int maxAmmo;
-    [SerializeField] float reloadTime;
-    [SerializeField] int clipSize;
-    [SerializeField] Container Inventory;
-    
+    [SerializeField]internal int maxAmmo;
+    [SerializeField]float reloadTime;
+    [SerializeField]internal int clipSize;
+    [SerializeField]Container Inventory;
+    [SerializeField]EWeaponType weaponType;
+
     public int shotsFiredInClip;
     bool isReloading;
 
@@ -20,11 +21,11 @@ public class WeaponReloader : MonoBehaviour {
     {
         Inventory.OnContainerReady += () =>
         {
-            containerItemId = Inventory.Add(this.name, maxAmmo);
+            containerItemId = Inventory.Add(weaponType.ToString(), maxAmmo);
         };
         
     }
-
+    
     public int RoundsRemainingInClip
     {
         get
@@ -65,13 +66,17 @@ public class WeaponReloader : MonoBehaviour {
     {        
         isReloading = false;
         shotsFiredInClip -= amount;
-        if (OnAmmoChanged != null)
-            OnAmmoChanged();
+        HandleOnAmmoChanged();
     }
 
     public void TakeFromClip(int amount)
     {
         shotsFiredInClip += amount;
+        HandleOnAmmoChanged();
+    }
+
+    public void HandleOnAmmoChanged()
+    {
         if (OnAmmoChanged != null)
             OnAmmoChanged();
     }

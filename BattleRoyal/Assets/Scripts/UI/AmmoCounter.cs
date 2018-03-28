@@ -32,7 +32,6 @@ public class AmmoCounter : MonoBehaviour
     {
         int amountInInventory = reloader.RoundsRemainingInInventory;
         int amountInClip = reloader.RoundsRemainingInClip;
-        print("h");
         text.text = (amountInClip.ToString() + " | " + amountInInventory.ToString());
     }
 
